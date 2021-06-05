@@ -4,9 +4,14 @@
  */
 
 var loader = require('loader')
-
+var config = require('config')
+var xhrDisabled = config.getConfiguration('xhr.enabled') === false
 // Don't instrument Chrome for iOS, it is buggy and acts like there are URL verification issues
-if (!loader.xhrWrappable || loader.disabled) return
+var xhrWrappable = loader.xhrWrappable
+
+if (loader.disabled || !xhrWrappable || xhrDisabled) return
+// Declare that we are using xhr instrumentation
+loader.features.xhr = true
 
 var handle = require('handle')
 var parseUrl = require('./parse-url.js')
@@ -20,9 +25,6 @@ var dataSize = require('ds')
 var responseSizeFromXhr = require('./response-size')
 
 var origXHR = window.XMLHttpRequest
-
-// Declare that we are using xhr instrumentation
-loader.features.xhr = true
 
 require('../../wrap-xhr')
 require('../../wrap-fetch')

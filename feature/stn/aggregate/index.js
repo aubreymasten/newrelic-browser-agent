@@ -4,17 +4,19 @@
  */
 
 var loader = require('loader')
-var registerHandler = require('../../../agent/register-handler')
 var harvest = require('../../../agent/harvest')
+var config = require('config')
+var stnDisabled = config.getConfiguration('stn.enabled') === false
+
+if (stnDisabled || !harvest.xhrUsable || !loader.xhrWrappable) return
+
+var registerHandler = require('../../../agent/register-handler')
 var HarvestScheduler = require('../../../agent/harvest-scheduler')
 var mapOwn = require('map-own')
 var reduce = require('reduce')
 var stringify = require('../../../agent/stringify')
 var slice = require('lodash._slice')
 var parseUrl = require('../../xhr/instrument/parse-url')
-var config = require('config')
-
-if (!harvest.xhrUsable || !loader.xhrWrappable) return
 
 var ptid = ''
 var ignoredEvents = {mouseup: true, mousedown: true}

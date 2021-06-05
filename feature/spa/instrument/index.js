@@ -3,6 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+var loader = require('loader')
+var config = require('config')
+var spaDisabled = config.getConfiguration('spa.enabled') === false
+var xhrDisabled = config.getConfiguration('xhr.enabled') === false
+// loader.xhrWrappable will be false in chrome for ios, but addEventListener is still available.
+// sauce does not have a browser to test this case against, so be careful when modifying this check
+if (spaDisabled || xhrDisabled || !win[ADD_EVENT_LISTENER] || !loader.xhrWrappable || loader.disabled) return
+
 var START = '-start'
 var END = '-end'
 var BODY = '-body'
@@ -16,12 +24,6 @@ var ADD_EVENT_LISTENER = 'addEventListener'
 
 var win = window
 var location = win.location
-
-var loader = require('loader')
-
-// loader.xhrWrappable will be false in chrome for ios, but addEventListener is still available.
-// sauce does not have a browser to test this case against, so be careful when modifying this check
-if (!win[ADD_EVENT_LISTENER] || !loader.xhrWrappable || loader.disabled) return
 
 var mutationEE = require('../../wrap-mutation')
 var promiseEE = require('../../wrap-promise')

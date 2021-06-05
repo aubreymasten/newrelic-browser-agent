@@ -3,6 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+var config = require('config')
+var spaDisabled = config.getConfiguration('spa.enabled') === false
+var xhrDisabled = config.getConfiguration('xhr.enabled') === false
+
+if (spaDisabled || xhrDisabled) return
+
 var register = require('../../../agent/register-handler')
 var parseUrl = require('../../xhr/instrument/parse-url')
 var harvest = require('../../../agent/harvest')
@@ -25,7 +31,6 @@ var dataSize = require('ds')
 var uniqueId = require('unique-id')
 var paintMetrics = require('../../../agent/paint-metrics').metrics
 var Interaction = require('./Interaction')
-var config = require('config')
 
 var INTERACTION_EVENTS = [
   'click',

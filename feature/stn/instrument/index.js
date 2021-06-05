@@ -8,6 +8,14 @@ if (!(window.performance &&
   window.performance.getEntriesByType
 )) return
 
+// Turn on feature harvesting
+var loader = require('loader')
+var config = require('config')
+var stnDisabled = config.getConfiguration('stn.enabled') === false
+if (loader.disabled || stnDisabled) return
+
+loader.features.stn = true
+
 var ee = require('ee')
 var handle = require('handle')
 var timerEE = require('../../wrap-timer')
@@ -24,12 +32,6 @@ var FN_START = 'fn' + START
 var FN_END = 'fn' + END
 var BST_TIMER = 'bstTimer'
 var PUSH_STATE = 'pushState'
-
-// Turn on feature harvesting
-var loader = require('loader')
-if (loader.disabled) return
-
-loader.features.stn = true
 
 // wrap history ap
 require('../../wrap-history')

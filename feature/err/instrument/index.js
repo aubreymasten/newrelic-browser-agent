@@ -2,17 +2,19 @@
  * Copyright 2020 New Relic Corporation. All rights reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
+var loader = require('loader')
+var config = require('config')
+var errDisabled = config.getConfiguration('err.enabled') === false
+
+if (errDisabled || loader.disabled) return
 
 var handle = require('handle')
 var slice = require('lodash._slice')
 var ee = require('ee')
-var loader = require('loader')
 var getOrSet = require('gos')
 var origOnerror = window.onerror
 var handleErrors = false
 var NR_ERR_PROP = 'nr@seenError'
-
-if (loader.disabled) return
 
 // skipNext counter to keep track of uncaught
 // errors that will be the same as caught errors.

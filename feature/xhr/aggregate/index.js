@@ -2,17 +2,19 @@
  * Copyright 2020 New Relic Corporation. All rights reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
+var loader = require('loader')
+var config = require('config')
+var xhrDisabled = config.getConfiguration('xhr.enabled') === false
+
+// bail if not instrumented
+if (xhrDisabled || !loader.features.xhr) return
 
 var agg = require('../../../agent/aggregator')
 var register = require('../../../agent/register-handler')
 var harvest = require('../../../agent/harvest')
 var stringify = require('../../../agent/stringify')
-var loader = require('loader')
 var ee = require('ee')
 var handle = require('handle')
-
-// bail if not instrumented
-if (!loader.features.xhr) return
 
 harvest.on('jserrors', function () {
   return { body: agg.take([ 'xhr' ]) }

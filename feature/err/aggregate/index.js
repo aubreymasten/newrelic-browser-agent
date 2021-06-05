@@ -3,12 +3,18 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+var loader = require('loader')
+var config = require('config')
+var errDisabled = config.getConfiguration('err.enabled') === false
+var xhrDisabled = config.getConfiguration('xhr.enabled') === false
+// jserrors and xhr share a harvest endpoint
+if ((errDisabled || !loader.features.err) && xhrDisabled) return
+
 var agg = require('../../../agent/aggregator')
 var canonicalFunctionName = require('./canonical-function-name')
 var cleanURL = require('../../../agent/clean-url')
 var computeStackTrace = require('./compute-stack-trace')
 var stringHashCode = require('./string-hash-code')
-var loader = require('loader')
 var ee = require('ee')
 var stackReported = {}
 var pageviewReported = {}
@@ -19,7 +25,6 @@ var stringify = require('../../../agent/stringify')
 var handle = require('handle')
 var baseEE = require('ee')
 var mapOwn = require('map-own')
-var config = require('config')
 var truncateSize = require('./format-stack-trace').truncateSize
 var errorCache = {}
 var currentBody
@@ -27,8 +32,6 @@ var currentBody
 // Make sure loader.offset is as accurate as possible
 require('../../../agent/start-time')
 
-// bail if not instrumented
-if (!loader.features.err) return
 var errorOnPage = false
 
 var harvestTimeSeconds = config.getConfiguration('jserrors.harvestTimeSeconds') || 60
